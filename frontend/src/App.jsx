@@ -1,21 +1,31 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import { FiAlertCircle, FiCheck, FiInbox } from 'react-icons/fi'
+import { FiAlertCircle, FiInbox } from 'react-icons/fi'
+import TodoForm from './components/TodoForm'
+import TodoList from './components/TodoList'
+import ConfirmDialog from './components/ConfirmDialog'
+import {
+  createTodo,
+  deleteTodo,
+  getTodos,
+  toggleTodoDone,
+  updateTodo
+} from './api/todos'
 
 function App() {
-  const [newTodo, setNewTodo] = useState("");
-  const [description, setDescription] = useState("");
-  const [todos, setTodos] = useState([]); 
+  const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [todoToDelete, setTodoToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let ignore = false;
 
-    const fetchTodos = async () => {
+    const loadTodos = async () => {
       try {
-        const response = await axios.get('/api/todos');
-        if (!ignore) setTodos(response.data);
+        const data = await getTodos();
+        if (!ignore) setTodos(data);
       } catch (error) {
         console.error("Error loading todos:", error);
         if (!ignore) setLoadError("Could not load your tasks.");
@@ -24,30 +34,67 @@ function App() {
       }
     };
 
-    fetchTodos();
+    loadTodos();
 
     return () => {
       ignore = true;
     };
   }, []);
 
-  const addTodo = async (e) => {
-    e.preventDefault();
-    if(!newTodo) return;
-
+  const runAction = async (action, fallbackMessage) => {
+    setActionError("");
     try {
-      const response = await axios.post('/api/todos', {
-        title: newTodo,
-        description
-      });
-
-      setTodos([...todos, response.data]);
-      setNewTodo('');
-      setDescription('');
+      await action();
+      return true;
     } catch (error) {
-      console.error("Error adding todo:", error);
+      console.error(fallbackMessage, error);
+      setActionError(error.response?.data?.message || fallbackMessage);
+      return false;
     }
-  }
+  };
+
+  const handleAdd = (todo) =>
+    runAction(async () => {
+      const created = await createTodo(todo);
+      setTodos((prev) => [...prev, created]);
+    }, "Could not add the task.");
+
+  const handleUpdate = (id, changes) =>
+    runAction(async () => {
+      const updated = await updateTodo(id, changes);
+      setTodos((prev) => prev.map((item) => (item._id === id ? updated : item)));
+    }, "Could not update the task.");
+
+  const handleToggleDone = (id) =>
+    runAction(async () => {
+      const updated = await toggleTodoDone(id);
+      setTodos((prev) => prev.map((item) => (item._id === id ? updated : item)));
+    }, "Could not change the task status.");
+
+  const handleRequestDelete = (todo) => setTodoToDelete(todo);
+
+  const cancelDelete = () => {
+    if (!deleting) setTodoToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!todoToDelete || deleting) return;
+
+    const id = todoToDelete._id;
+
+    setDeleting(true);
+    await runAction(async () => {
+      await deleteTodo(id);
+      setTodos((prev) => prev.filter((item) => item._id !== id));
+    }, "Could not delete the task.");
+    setDeleting(false);
+    setTodoToDelete(null);
+  };
+
+  const pendingTodos = todos.filter((todo) => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
+  const hasTodos = todos.length > 0;
+
   return (
     <>
       <section
@@ -64,141 +111,86 @@ function App() {
             </p>
           </header>
 
-          <form
-            onSubmit={addTodo}
-            className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8"
-          >
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="todo-title"
-                className="text-sm font-medium text-slate-700"
-              >
-                Task
-              </label>
-              <input
-                id="todo-title"
-                type="text"
-                placeholder="Add a new task..."
-                value={newTodo}
-                onChange={(e) => setNewTodo(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15"
-                required
-              />
-            </div>
+          <TodoForm onAdd={handleAdd} />
 
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="todo-description"
-                className="text-sm font-medium text-slate-700"
-              >
-                Description
-              </label>
-              <input
-                id="todo-description"
-                type="text"
-                placeholder="Add a description..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="mt-1 inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 active:bg-indigo-800"
+          {actionError && (
+            <p
+              role="alert"
+              className="mt-4 flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
             >
-              Add Task
-            </button>
-          </form>
+              <FiAlertCircle className="size-4 shrink-0" />
+              {actionError}
+            </p>
+          )}
 
-          <section className="mt-8" aria-labelledby="todo-list-heading">
-            <div className="mb-3 flex items-baseline justify-between">
-              <h2
-                id="todo-list-heading"
-                className="text-xs font-semibold tracking-wider text-slate-600 uppercase"
-              >
-                Your tasks
-              </h2>
-              {!loading && !loadError && (
-                <span className="text-xs font-medium text-slate-400">
-                  {todos.length} {todos.length === 1 ? "task" : "tasks"}
-                </span>
-              )}
-            </div>
+          {loading && (
+            <ul className="mt-8 flex flex-col gap-3" aria-hidden="true">
+              {[0, 1, 2].map((placeholder) => (
+                <li
+                  key={placeholder}
+                  className="h-20 animate-pulse rounded-2xl border border-slate-200 bg-white/70"
+                />
+              ))}
+            </ul>
+          )}
 
-            {loading && (
-              <ul className="flex flex-col gap-3" aria-hidden="true">
-                {[0, 1, 2].map((placeholder) => (
-                  <li
-                    key={placeholder}
-                    className="h-20 animate-pulse rounded-2xl border border-slate-200 bg-white/70"
-                  />
-                ))}
-              </ul>
-            )}
+          {!loading && loadError && (
+            <p
+              role="alert"
+              className="mt-8 flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+            >
+              <FiAlertCircle className="size-4 shrink-0" />
+              {loadError}
+            </p>
+          )}
 
-            {!loading && loadError && (
-              <p className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                <FiAlertCircle className="size-4 shrink-0" />
-                {loadError}
+          {!loading && !loadError && !hasTodos && (
+            <div className="mt-8 flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-10 text-center">
+              <FiInbox className="size-6 text-slate-400" />
+              <p className="text-sm font-medium text-slate-600">No tasks yet</p>
+              <p className="text-xs text-slate-500">
+                Add your first task using the form above.
               </p>
-            )}
+            </div>
+          )}
 
-            {!loading && !loadError && todos.length === 0 && (
-              <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-10 text-center">
-                <FiInbox className="size-6 text-slate-400" />
-                <p className="text-sm font-medium text-slate-600">No tasks yet</p>
-                <p className="text-xs text-slate-500">
-                  Add your first task using the form above.
-                </p>
-              </div>
-            )}
-
-            {!loading && !loadError && todos.length > 0 && (
-              <ul className="flex flex-col gap-3">
-                {todos.map((todo) => (
-                  <li
-                    key={todo._id}
-                    className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5 transition hover:border-indigo-200 hover:shadow-md sm:p-5"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span
-                        className={
-                          todo.completed
-                            ? "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"
-                            : "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 text-transparent"
-                        }
-                      >
-                        <FiCheck className="size-3.5" strokeWidth={3} />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <h3
-                          className={
-                            todo.completed
-                              ? "truncate text-base font-semibold text-slate-400 line-through"
-                              : "truncate text-base font-semibold text-slate-900"
-                          }
-                        >
-                          {todo.title}
-                        </h3>
-                        <p className="mt-1 text-sm break-words text-slate-500">
-                          {todo.description}
-                        </p>
-                      </div>
-                      {todo.completed && (
-                        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                          Done
-                        </span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          {!loading && !loadError && hasTodos && (
+            <>
+              <TodoList
+                headingId="pending-heading"
+                title="To do"
+                todos={pendingTodos}
+                emptyMessage="Nothing pending."
+                onUpdate={handleUpdate}
+                onToggleDone={handleToggleDone}
+                onRequestDelete={handleRequestDelete}
+              />
+              <TodoList
+                headingId="completed-heading"
+                title="Completed"
+                todos={completedTodos}
+                emptyMessage="Nothing completed yet."
+                onUpdate={handleUpdate}
+                onToggleDone={handleToggleDone}
+                onRequestDelete={handleRequestDelete}
+              />
+            </>
+          )}
         </div>
       </section>
+
+      <ConfirmDialog
+        open={Boolean(todoToDelete)}
+        title="Delete this task?"
+        message={
+          todoToDelete
+            ? `"${todoToDelete.title}" will be permanently removed. This action can't be undone.`
+            : ""
+        }
+        busy={deleting}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </>
   )
 }
