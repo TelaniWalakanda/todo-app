@@ -30,7 +30,7 @@ function TodoForm({ onAdd }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8"
+      className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8 max-w-lg"
     >
       <div className="flex flex-col gap-2">
         <label

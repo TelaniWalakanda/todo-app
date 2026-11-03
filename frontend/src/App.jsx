@@ -101,7 +101,7 @@ function App() {
         id="center"
         className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-indigo-50 to-slate-100 px-4 py-12"
       >
-        <div className="w-full max-w-lg">
+        <div className="w-full">
           <header className="mb-8 text-center">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Task Manager
@@ -155,8 +155,8 @@ function App() {
           )}
 
           {!loading && !loadError && hasTodos && (
-            <>
-              <TodoList
+            <div className="mt-8 flex flex-row gap-6 justify-between">
+              <TodoList   
                 headingId="pending-heading"
                 title="To do"
                 todos={pendingTodos}
@@ -174,7 +174,7 @@ function App() {
                 onToggleDone={handleToggleDone}
                 onRequestDelete={handleRequestDelete}
               />
-            </>
+            </div>
           )}
         </div>
       </section>
@@ -183,9 +183,13 @@ function App() {
         open={Boolean(todoToDelete)}
         title="Delete this task?"
         message={
-          todoToDelete
-            ? `"${todoToDelete.title}" will be permanently removed. This action can't be undone.`
-            : ""
+          todoToDelete && (
+            <>
+              "<strong className="font-semibold text-slate-800">
+                {todoToDelete.title}
+              </strong>" will be permanently removed. This action can't be undone.
+            </>
+          )
         }
         busy={deleting}
         onConfirm={confirmDelete}

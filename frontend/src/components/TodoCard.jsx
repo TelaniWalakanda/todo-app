@@ -124,7 +124,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
               )}
             </div>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+          <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3 justify-end">
             <button
               type="button"
               onClick={startEditing}

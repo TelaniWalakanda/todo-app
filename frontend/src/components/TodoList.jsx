@@ -10,7 +10,7 @@ function TodoList({
   onRequestDelete
 }) {
   return (
-    <section aria-labelledby={headingId} className="mt-8">
+    <section aria-labelledby={headingId} className="mt-8 w-full">
       <div className="mb-3 flex items-baseline justify-between">
         <h2
           id={headingId}
