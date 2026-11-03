@@ -91,17 +91,7 @@ router.patch("/:id/done", async (req, res) => {
 //delete todo
 router.delete("/:id", async (req, res) => {
     try {
-        await res.todo.remove();
-        res.json({ message: 'Deleted Todo' });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-//get one todo  
-router.get("/:id", async (req, res) => {
-    try {
-        const todo = await Todo.findById(req.params.id);
+        const todo = await Todo.findByIdAndDelete(req.params.id);
         if (!todo) return res.status(404).json({ message: 'Todo not found' });
 
         res.json({ message: 'Deleted Todo', id: req.params.id });
