@@ -47,7 +47,7 @@ function ConfirmDialog({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
       <div
-        className="dialog-backdrop absolute inset-0 bg-slate-900/50 backdrop-blur-md"
+        className="dialog-backdrop absolute inset-0 bg-ink/35 backdrop-blur-md"
         onClick={onCancel}
         aria-hidden="true"
       />
@@ -57,22 +57,22 @@ function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-message"
-        className="dialog-panel relative w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-2xl shadow-slate-900/25"
+        className="dialog-panel relative w-full max-w-sm rounded-2xl border border-line bg-white p-6 text-left shadow-2xl shadow-ink/25"
       >
         <div className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-danger-soft text-danger">
             <FiTrash2 className="size-5" />
           </span>
           <div className="min-w-0 flex-1">
             <h2
               id="confirm-dialog-title"
-              className="text-base font-semibold text-slate-900"
+              className="text-base font-semibold text-ink"
             >
               {title}
             </h2>
             <p
               id="confirm-dialog-message"
-              className="mt-1 text-sm break-words text-slate-500"
+              className="mt-1 text-sm break-words text-ink-soft"
             >
               {message}
             </p>
@@ -85,7 +85,7 @@ function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-2 text-xs font-medium text-ink-soft transition hover:border-sage hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest disabled:cursor-not-allowed disabled:opacity-60"
           >
             <FiX className="size-3.5" />
             Cancel
@@ -94,7 +94,7 @@ function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={busy}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-rose-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-danger px-3 py-2 text-xs font-medium text-white transition hover:bg-danger-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-60"
           >
             <FiTrash2 className="size-3.5" />
             {busy ? busyLabel : confirmLabel}

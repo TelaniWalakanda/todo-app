@@ -1,11 +1,28 @@
 import { useState } from 'react'
+import confetti from 'canvas-confetti'
 import { FiCheck, FiEdit2, FiRotateCcw, FiSave, FiTrash2, FiX } from 'react-icons/fi'
 
+const triggerConfetti = (event , color) => {
+  const button = event.currentTarget;
+  const rect = button.getBoundingClientRect();
+  const x = (rect.left + rect.width / 2) / window.innerWidth;
+  const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+  confetti({
+      particleCount: 100,
+      spread: 360,
+      startVelocity: 30,
+      origin: { x, y },
+      ...(color ? { colors: [color] } : {}),
+    });
+
+};
+
 const inputClasses =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15";
+  "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-muted shadow-sm transition outline-none focus:border-forest focus:ring-4 focus:ring-forest/15";
 
 const secondaryButtonClasses =
-  "inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium text-ink-soft transition hover:border-sage hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest disabled:cursor-not-allowed disabled:opacity-60";
 
 function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,13 +53,13 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
   };
 
   return (
-    <li className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5 transition hover:border-indigo-200 hover:shadow-md sm:p-5">
+    <li className="rounded-2xl border border-line bg-white shadow-sm shadow-ink/5 transition hover:border-sage hover:shadow-md p-6">
       {isEditing ? (
         <form onSubmit={handleSave} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor={`todo-title-${todo._id}`}
-              className="text-xs font-medium text-slate-600"
+              className="text-xs font-medium text-ink-soft"
             >
               Task
             </label>
@@ -60,10 +77,10 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor={`todo-description-${todo._id}`}
-              className="text-xs font-medium text-slate-600"
+              className="text-xs font-medium text-ink-soft"
             >
               Description{" "}
-              <span className="font-normal text-slate-400">(optional)</span>
+              <span className="font-normal text-ink-muted">(optional)</span>
             </label>
             <input
               id={`todo-description-${todo._id}`}
@@ -78,7 +95,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-forest px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-forest-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest disabled:cursor-not-allowed disabled:opacity-60"
             >
               <FiSave className="size-3.5" />
               {saving ? "Saving..." : "Save"}
@@ -100,8 +117,8 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
             <span
               className={
                 todo.completed
-                  ? "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"
-                  : "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 text-transparent"
+                  ? "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-sage-soft text-forest"
+                  : "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-sage text-transparent"
               }
             >
               <FiCheck className="size-3.5" strokeWidth={3} />
@@ -111,20 +128,20 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
               <h3
                 className={
                   todo.completed
-                    ? "truncate text-base font-semibold text-slate-400 line-through"
-                    : "truncate text-base font-semibold text-slate-900"
+                    ? "truncate text-base font-semibold text-ink-muted line-through"
+                    : "truncate text-base font-semibold text-ink"
                 }
               >
                 {todo.title}
               </h3>
               {todo.description && (
-                <p className="mt-1 text-sm break-words text-slate-500">
+                <p className="mt-1 text-sm break-words text-ink-soft">
                   {todo.description}
                 </p>
               )}
             </div>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3 justify-end">
+          <div className="mt-3 flex flex-wrap gap-2 border-t border-line pt-3 justify-end">
             <button
               type="button"
               onClick={startEditing}
@@ -136,11 +153,14 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
 
             <button
               type="button"
-              onClick={() => onToggleDone(todo._id)}
+              onClick={(e) => {
+                if (!todo.completed) triggerConfetti(e);
+                onToggleDone(todo._id);
+              }}
               className={
                 todo.completed
                   ? secondaryButtonClasses
-                  : "inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+                  : "inline-flex items-center gap-1.5 rounded-lg border border-sage bg-sage-soft px-2.5 py-1.5 text-xs font-medium text-forest transition hover:bg-sage-softer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest"
               }
             >
               {todo.completed ? (
@@ -154,7 +174,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
             <button
               type="button"
               onClick={() => onRequestDelete(todo)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-danger-line bg-danger-soft px-2.5 py-1.5 text-xs font-medium text-danger transition hover:bg-danger-softer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger"
             >
               <FiTrash2 className="size-3.5" />
               Delete

@@ -3,6 +3,7 @@ import TodoCard from './TodoCard'
 function TodoList({
   headingId,
   title,
+  variant = 'pending',
   todos,
   emptyMessage,
   onUpdate,
@@ -10,29 +11,32 @@ function TodoList({
   onRequestDelete
 }) {
   return (
-    <section aria-labelledby={headingId} className="mt-8 w-full">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2
-          id={headingId}
-          className="text-xs font-semibold tracking-wider text-slate-600 uppercase"
-        >
+    <section aria-labelledby={headingId} className="list-section">
+      <div className="list-header">
+        <h2 id={headingId} className="list-title">
+          <span
+            className={`list-title-dot ${variant}`}
+            aria-hidden="true"
+          />
           {title}
         </h2>
-        <span className="text-xs font-medium text-slate-400">
-          {todos.length} {todos.length === 1 ? "task" : "tasks"}
+        <span className="list-count">
+          {todos.length} {todos.length === 1 ? 'task' : 'tasks'}
         </span>
       </div>
 
       {todos.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-5 text-center text-xs font-medium text-slate-500">
-          {emptyMessage}
-        </p>
+        <p className="empty-state">{emptyMessage}</p>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {todos.map((todo) => (
+        <ul
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}
+          aria-label={`${title} tasks`}
+        >
+          {todos.map((todo, index) => (
             <TodoCard
               key={todo._id}
               todo={todo}
+              index={index}
               onUpdate={onUpdate}
               onToggleDone={onToggleDone}
               onRequestDelete={onRequestDelete}

@@ -3,6 +3,7 @@ import { FiAlertCircle, FiInbox } from 'react-icons/fi'
 import TodoForm from './components/TodoForm'
 import TodoList from './components/TodoList'
 import ConfirmDialog from './components/ConfirmDialog'
+import ProgressChart from './components/ProgressChart'
 import {
   createTodo,
   deleteTodo,
@@ -97,70 +98,102 @@ function App() {
 
   return (
     <>
-      <section
-        id="center"
-        className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-indigo-50 to-slate-100 px-4 py-12"
-      >
-        <div className="w-full">
-          <header className="mb-8 text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+      {/* Animated background */}
+      <div className="app-bg" aria-hidden="true">
+        <div className="grid-overlay" />
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+      </div>
+
+      <div className="app-container">
+        <div className="app-inner">
+
+          {/* Header */}
+          <header className="app-header">
+            <h1 className="text-2xl font-bold text-center pb-4">
               Task Manager
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Keep track of what needs doing.
-            </p>
+            <h2 className="app-title">Stay on Track,<br />Get Things Done.</h2>
+            <p className="app-subtitle">Organize your tasks with clarity and flow.</p>
           </header>
 
-          <TodoForm onAdd={handleAdd} />
+          {/* Add task form with progress doughnut */}
+          <div className="form-row">
+            <TodoForm onAdd={handleAdd} />
+            {!loading && !loadError && (
+              <ProgressChart completed={completedTodos.length} total={todos.length} />
+            )}
+          </div>
 
+          {/* Action error */}
           {actionError && (
             <p
               role="alert"
-              className="mt-4 flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+              className="alert alert-error"
+              style={{ marginTop: '1rem' }}
             >
-              <FiAlertCircle className="size-4 shrink-0" />
+              <FiAlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
               {actionError}
             </p>
           )}
 
+          {/* Loading skeletons */}
           {loading && (
-            <ul className="mt-8 flex flex-col gap-3" aria-hidden="true">
-              {[0, 1, 2].map((placeholder) => (
-                <li
-                  key={placeholder}
-                  className="h-20 animate-pulse rounded-2xl border border-slate-200 bg-white/70"
-                />
+            <ul
+              className="lists-grid"
+              aria-hidden="true"
+              style={{ marginTop: '1.5rem' }}
+            >
+              {[0, 1].map((col) => (
+                <li key={col} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="skeleton"
+                      style={{
+                        height: '80px',
+                        animationDelay: `${(col * 3 + i) * 0.08}s`,
+                      }}
+                    />
+                  ))}
+                </li>
               ))}
             </ul>
           )}
 
+          {/* Load error */}
           {!loading && loadError && (
-            <p
-              role="alert"
-              className="mt-8 flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
-            >
-              <FiAlertCircle className="size-4 shrink-0" />
+            <p role="alert" className="alert alert-error" style={{ marginTop: '2rem' }}>
+              <FiAlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
               {loadError}
             </p>
           )}
 
+          {/* Empty state */}
           {!loading && !loadError && !hasTodos && (
-            <div className="mt-8 flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-10 text-center">
-              <FiInbox className="size-6 text-slate-400" />
-              <p className="text-sm font-medium text-slate-600">No tasks yet</p>
-              <p className="text-xs text-slate-500">
-                Add your first task using the form above.
+            <div className="empty-state-full" style={{ marginTop: '2rem' }}>
+              <div className="empty-icon">
+                <FiInbox />
+              </div>
+              <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-ink-soft)' }}>
+                No tasks yet
+              </p>
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-ink-muted)', maxWidth: '220px' }}>
+                Add your first task above to get started.
               </p>
             </div>
           )}
 
+          {/* Todo lists */}
           {!loading && !loadError && hasTodos && (
-            <div className="mt-8 flex flex-row gap-6 justify-between">
-              <TodoList   
+            <div className="lists-grid" style={{ marginTop: '1.5rem' }}>
+              <TodoList
                 headingId="pending-heading"
-                title="To do"
+                title="To Do"
+                variant="pending"
                 todos={pendingTodos}
-                emptyMessage="Nothing pending."
+                emptyMessage="Nothing pending — great work!"
                 onUpdate={handleUpdate}
                 onToggleDone={handleToggleDone}
                 onRequestDelete={handleRequestDelete}
@@ -168,6 +201,7 @@ function App() {
               <TodoList
                 headingId="completed-heading"
                 title="Completed"
+                variant="completed"
                 todos={completedTodos}
                 emptyMessage="Nothing completed yet."
                 onUpdate={handleUpdate}
@@ -176,8 +210,9 @@ function App() {
               />
             </div>
           )}
+
         </div>
-      </section>
+      </div>
 
       <ConfirmDialog
         open={Boolean(todoToDelete)}
@@ -185,9 +220,7 @@ function App() {
         message={
           todoToDelete && (
             <>
-              "<strong className="font-semibold text-slate-800">
-                {todoToDelete.title}
-              </strong>" will be permanently removed. This action can't be undone.
+              <strong>{todoToDelete.title}</strong> will be permanently removed. This action can&apos;t be undone.
             </>
           )
         }

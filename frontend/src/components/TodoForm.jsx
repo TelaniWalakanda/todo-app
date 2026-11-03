@@ -1,7 +1,5 @@
 import { useState } from 'react'
-
-const inputClasses =
-  "w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15";
+import { FiPlus } from 'react-icons/fi'
 
 function TodoForm({ onAdd }) {
   const [title, setTitle] = useState("");
@@ -28,52 +26,73 @@ function TodoForm({ onAdd }) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8 max-w-lg"
-    >
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="todo-title"
-          className="text-sm font-medium text-slate-700"
-        >
-          Task
-        </label>
-        <input
-          id="todo-title"
-          type="text"
-          placeholder="Add a new task..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className={inputClasses}
-          required
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="form-card">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div>
+          <label htmlFor="todo-title" className="form-label">
+            Task
+          </label>
+          <input
+            id="todo-title"
+            type="text"
+            placeholder="What needs to be done?"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="input-field"
+            required
+            autoComplete="off"
+          />
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="todo-description"
-          className="text-sm font-medium text-slate-700"
-        >
-          Description <span className="font-normal text-slate-400">(optional)</span>
-        </label>
-        <input
-          id="todo-description"
-          type="text"
-          placeholder="Add a description..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className={inputClasses}
-        />
-      </div>
+        <div>
+          <label htmlFor="todo-description" className="form-label">
+            Description{' '}
+            <span style={{ fontWeight: 400, textTransform: 'none', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              (optional)
+            </span>
+          </label>
+          <input
+            id="todo-description"
+            type="text"
+            placeholder="Add some details..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="input-field"
+            autoComplete="off"
+          />
+        </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-1 inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 active:bg-indigo-800 disabled:cursor-not-allowed disabled:bg-indigo-400"
-      >
-        {submitting ? "Adding..." : "Add Task"}
-      </button>
+        <button
+          id="add-task-btn"
+          type="submit"
+          disabled={submitting}
+          className="btn btn-primary"
+          style={{ marginTop: '0.25rem' }}
+        >
+          {submitting ? (
+            <>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                className="animate-spin-slow"
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+              Adding...
+            </>
+          ) : (
+            <>
+              <FiPlus style={{ width: 17, height: 17, strokeWidth: 2.5 }} />
+              Add Task
+            </>
+          )}
+        </button>
+      </div>
     </form>
   );
 }
