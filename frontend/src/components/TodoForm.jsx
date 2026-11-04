@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FiPlus } from 'react-icons/fi'
+import { FiAlertCircle, FiPlus } from 'react-icons/fi'
 import {
   DESCRIPTION_MAX_LENGTH,
   TITLE_MAX_LENGTH,
@@ -14,6 +14,7 @@ function TodoForm({ onAdd }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
 
     const todo = {
       title: title.trim(),
@@ -42,17 +43,22 @@ function TodoForm({ onAdd }) {
       <div className="form-card-fields">
         <div>
           <label htmlFor="todo-title" className="form-label">
-            Task
+            Task Title
           </label>
           <input
             id="todo-title"
             type="text"
             placeholder="What needs to be done?"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (error) setError("");
+            }}
             className="input-field"
             maxLength={TITLE_MAX_LENGTH}
-            required
+            aria-required="true"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? "todo-title-error" : undefined}
             autoComplete="off"
           />
         </div>
@@ -77,7 +83,8 @@ function TodoForm({ onAdd }) {
         </div>
 
         {error && (
-          <p role="alert" className="alert alert-error">
+          <p id="todo-title-error" role="alert" className="alert alert-error">
+            <FiAlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
             {error}
           </p>
         )}
