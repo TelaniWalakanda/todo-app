@@ -6,7 +6,7 @@ and it talks to the Express API in `../backend`.
 
 ## Built with
 
-- **React 19** with Vite 8 (`npm run dev`, `npm run build`)
+- **React 19** with Vite 8 (`npm run dev:client`, `npm run build`)
 - **Tailwind CSS v4** through `@tailwindcss/vite`, plus a fair amount of plain CSS in
   `src/index.css` for the cards, background orbs and animations
 - **Axios** for talking to the API
@@ -50,15 +50,11 @@ You need Node 20.19+ or 22.12+ (Vite 8 won't start on older versions). I'm on No
 
 The front end is no use on its own — it needs the API, so start both.
 
-First install the dependencies. The backend packages live in the repo root, the
-frontend ones in this folder:
+There's a single `package.json` in the repo root holding both the backend and
+frontend dependencies, so one install covers everything:
 
 ```bash
 # in the repo root
-npm install
-
-# then
-cd frontend
 npm install
 ```
 
@@ -71,8 +67,7 @@ npm run dev   # http://localhost:5000
 And the front end in another:
 
 ```bash
-cd frontend
-npm run dev   # http://localhost:5173
+npm run dev:client   # http://localhost:5173
 ```
 
 Open http://localhost:5173.
@@ -82,12 +77,16 @@ running or couldn't reach MongoDB — check the other terminal first.
 
 ### Scripts
 
+All of these run from the repo root:
+
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Dev server with hot reload |
-| `npm run build` | Production build into `dist/` |
-| `npm run preview` | Serves the built `dist/` locally |
-| `npm run lint` | ESLint |
+| `npm run dev` | Starts the Express API (nodemon) on http://localhost:5000 |
+| `npm run dev:client` | Vite dev server with hot reload on http://localhost:5173 |
+| `npm run build` | Production build into `frontend/dist/` |
+| `npm run preview` | Serves the built `frontend/dist/` locally |
+| `npm run lint` | ESLint over `frontend/` |
+| `npm start` | Runs the API once, without nodemon |
 
 ### Why there's no CORS setup
 
