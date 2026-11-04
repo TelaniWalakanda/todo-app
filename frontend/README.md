@@ -26,7 +26,7 @@ Most of the work happens in `src/`. Inside it:
 - `TodoForm.jsx` – the form at the top for adding a task
 - `TodoList.jsx` – a column; it renders the cards and the empty message
 - `TodoCard.jsx` – a single task, including the inline edit mode and the confetti
-- `ProgressChart.jsx` – the doughnut plus the done/remaining counts
+- `ProgressChart.jsx` – the doughnut plus the done/remaining counts (This was done as an extra work I have done to showcase a summary)
 - `ConfirmDialog.jsx` – the "delete this task?" popup
 
 **`utils/validation.js`** – the title and description length rules, shared by the form
