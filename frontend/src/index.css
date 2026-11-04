@@ -141,6 +141,13 @@ body {
   justify-content: left;
 }
 
+@media (max-width: 640px) {
+  .app-container {
+    padding-inline: 2rem;
+    justify-content: center;
+  }
+}
+
 .app-inner {
   width: 100%;
 }
@@ -299,6 +306,46 @@ body {
   color: var(--text-muted);
 }
 
+.progress-summary {
+  display: flex;
+  width: 100%;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.progress-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.25rem;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  border: 1px solid var(--border-1);
+}
+
+.progress-stat-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.progress-stat-value {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.progress-stat--remaining .progress-stat-value {
+  color: var(--text-secondary);
+}
+
 .progress-card-count {
   font-size: 0.75rem;
   font-weight: 500;
@@ -335,6 +382,18 @@ body {
 
   .doughnut-pct {
     font-size: 1.15rem;
+  }
+
+  .progress-summary {
+    flex: 1;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .progress-stat {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.35rem 0.6rem;
   }
 
   .progress-card-count {
@@ -546,6 +605,7 @@ body {
 @media (max-width: 640px) {
   .lists-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
 
@@ -556,7 +616,7 @@ body {
   height: 100%;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1200px) {
   .task-list {
     grid-template-columns: 1fr;
   }
@@ -565,6 +625,7 @@ body {
 /* ===== LIST SECTION ===== */
 .list-section {
   animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  height: 100%;
 }
 
 .list-section:nth-child(2) {

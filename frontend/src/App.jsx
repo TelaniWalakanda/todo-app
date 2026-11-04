@@ -111,7 +111,7 @@ function App() {
 
           {/* Header */}
           <header className="app-header">
-            <h1 className="text-2xl font-bold text-center pb-4">
+            <h1 className="text-2xl font-bold text-center md:text-left pb-4">
               Task Manager
             </h1>
             <h2 className="app-title">Stay on Track,<br />Get Things Done.</h2>
