@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import confetti from 'canvas-confetti'
 import { FiCheck, FiEdit2, FiRotateCcw, FiSave, FiTrash2, FiX } from 'react-icons/fi'
+import {
+  DESCRIPTION_MAX_LENGTH,
+  TITLE_MAX_LENGTH,
+  validateTodo
+} from '../utils/validation'
 
 const triggerConfetti = (event , color) => {
   const button = event.currentTarget;
@@ -29,24 +34,37 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const startEditing = () => {
     setTitle(todo.title);
     setDescription(todo.description);
+    setError("");
     setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setError("");
+    setIsEditing(false);
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return;
-
-    setSaving(true);
-    const updated = await onUpdate(todo._id, {
-      title: trimmedTitle,
+    const changes = {
+      title: title.trim(),
       description: description.trim()
-    });
+    };
+
+    const validationError = validateTodo(changes);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setError("");
+    setSaving(true);
+    const updated = await onUpdate(todo._id, changes);
     setSaving(false);
 
     if (updated) setIsEditing(false);
@@ -69,6 +87,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className={inputClasses}
+              maxLength={TITLE_MAX_LENGTH}
               autoFocus
               required
             />
@@ -88,8 +107,15 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={inputClasses}
+              maxLength={DESCRIPTION_MAX_LENGTH}
             />
           </div>
+
+          {error && (
+            <p role="alert" className="alert alert-error">
+              {error}
+            </p>
+          )}
 
           <div className="flex flex-wrap gap-2">
             <button
@@ -102,7 +128,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
             </button>
             <button
               type="button"
-              onClick={() => setIsEditing(false)}
+              onClick={cancelEditing}
               disabled={saving}
               className={secondaryButtonClasses}
             >

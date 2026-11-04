@@ -8,6 +8,27 @@ const sendError = (res, err) => {
     res.status(isClientError ? 400 : 500).json({ message: err.message });
 };
 
+const isValidText = (value) => typeof value === 'string';
+
+// Rejects non-string fields and a missing or blank title
+const validateBody = (body, { titleRequired }) => {
+    const { title, description } = body ?? {};
+
+    if (title === undefined) {
+        return titleRequired ? 'Title is required' : null;
+    }
+    if (!isValidText(title)) {
+        return 'Title must be a string';
+    }
+    if (title.trim() === '') {
+        return 'Title cannot be empty';
+    }
+    if (description !== undefined && !isValidText(description)) {
+        return 'Description must be a string';
+    }
+    return null;
+};
+
 const findTodo = async (id, res) => {
     const todo = await Todo.findById(id);
     if (!todo) {
@@ -40,6 +61,11 @@ router.get("/:id", async (req, res) => {
 
 //Add new todo
 router.post("/", async (req, res) => {
+    const validationError = validateBody(req.body, { titleRequired: true });
+    if (validationError) {
+        return res.status(400).json({ message: validationError });
+    }
+
     const todo = new Todo({
         title: req.body.title,
         description: req.body.description
@@ -55,6 +81,11 @@ router.post("/", async (req, res) => {
 
 //update todo title/description
 router.put("/:id", async (req, res) => {
+    const validationError = validateBody(req.body, { titleRequired: false });
+    if (validationError) {
+        return res.status(400).json({ message: validationError });
+    }
+
     try {
         const todo = await findTodo(req.params.id, res);
         if (!todo) return;

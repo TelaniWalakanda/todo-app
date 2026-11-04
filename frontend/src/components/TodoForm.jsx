@@ -1,22 +1,34 @@
 import { useState } from 'react'
 import { FiPlus } from 'react-icons/fi'
+import {
+  DESCRIPTION_MAX_LENGTH,
+  TITLE_MAX_LENGTH,
+  validateTodo
+} from '../utils/validation'
 
 function TodoForm({ onAdd }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return;
-
-    setSubmitting(true);
-    const added = await onAdd({
-      title: trimmedTitle,
+    const todo = {
+      title: title.trim(),
       description: description.trim()
-    });
+    };
+
+    const validationError = validateTodo(todo);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setError("");
+    setSubmitting(true);
+    const added = await onAdd(todo);
     setSubmitting(false);
 
     if (added) {
@@ -39,6 +51,7 @@ function TodoForm({ onAdd }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="input-field"
+            maxLength={TITLE_MAX_LENGTH}
             required
             autoComplete="off"
           />
@@ -58,9 +71,16 @@ function TodoForm({ onAdd }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="input-field"
+            maxLength={DESCRIPTION_MAX_LENGTH}
             autoComplete="off"
           />
         </div>
+
+        {error && (
+          <p role="alert" className="alert alert-error">
+            {error}
+          </p>
+        )}
 
         <button
           id="add-task-btn"
