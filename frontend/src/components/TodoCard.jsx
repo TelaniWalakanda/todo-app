@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import confetti from 'canvas-confetti'
-import { FiCheck, FiEdit2, FiRotateCcw, FiSave, FiTrash2, FiX } from 'react-icons/fi'
+import { FiAlertCircle, FiCheck, FiEdit2, FiRotateCcw, FiSave, FiTrash2, FiX } from 'react-icons/fi'
 import {
   DESCRIPTION_MAX_LENGTH,
   TITLE_MAX_LENGTH,
@@ -50,6 +50,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (saving) return;
 
     const changes = {
       title: title.trim(),
@@ -71,7 +72,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
   };
 
   return (
-    <li className="rounded-2xl border border-line bg-white shadow-sm shadow-ink/5 transition hover:border-sage hover:shadow-md p-6 h-80">
+    <li className="rounded-2xl border border-line bg-white shadow-sm shadow-ink/5 transition hover:border-sage hover:shadow-md p-6 h-fit min-h-60 flex flex-col justify-between">
       {isEditing ? (
         <form onSubmit={handleSave} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
@@ -85,11 +86,16 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
               id={`todo-title-${todo._id}`}
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (error) setError("");
+              }}
               className={inputClasses}
               maxLength={TITLE_MAX_LENGTH}
               autoFocus
-              required
+              aria-required="true"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? `todo-error-${todo._id}` : undefined}
             />
           </div>
 
@@ -112,7 +118,8 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
           </div>
 
           {error && (
-            <p role="alert" className="alert alert-error">
+            <p id={`todo-error-${todo._id}`} role="alert" className="alert alert-error">
+              <FiAlertCircle className="size-4 shrink-0" />
               {error}
             </p>
           )}
