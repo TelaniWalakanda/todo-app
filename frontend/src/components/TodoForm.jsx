@@ -39,7 +39,7 @@ function TodoForm({ onAdd }) {
 
   return (
     <form onSubmit={handleSubmit} className="form-card">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="form-card-fields">
         <div>
           <label htmlFor="todo-title" className="form-label">
             Task
@@ -86,8 +86,7 @@ function TodoForm({ onAdd }) {
           id="add-task-btn"
           type="submit"
           disabled={submitting}
-          className="btn btn-primary"
-          style={{ marginTop: '0.25rem' }}
+          className="btn btn-primary form-card-submit"
         >
           {submitting ? (
             <>

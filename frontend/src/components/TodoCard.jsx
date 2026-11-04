@@ -71,7 +71,7 @@ function TodoCard({ todo, onUpdate, onToggleDone, onRequestDelete }) {
   };
 
   return (
-    <li className="rounded-2xl border border-line bg-white shadow-sm shadow-ink/5 transition hover:border-sage hover:shadow-md p-6 h-full">
+    <li className="rounded-2xl border border-line bg-white shadow-sm shadow-ink/5 transition hover:border-sage hover:shadow-md p-6 h-80">
       {isEditing ? (
         <form onSubmit={handleSave} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">

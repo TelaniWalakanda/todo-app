@@ -124,6 +124,14 @@ function App() {
             {!loading && !loadError && (
               <ProgressChart completed={completedTodos.length} total={todos.length} />
             )}
+            <div className="flex justify-end">
+              <img
+              src={`${import.meta.env.BASE_URL}side-img.webp`}
+              alt=""
+              className="side-img hidden lg:block h-full w-full object-contain"
+              aria-hidden="true"
+            />
+            </div>
           </div>
 
           {/* Action error */}
