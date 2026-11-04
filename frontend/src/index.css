@@ -136,19 +136,18 @@ body {
   position: relative;
   z-index: 1;
   min-height: 100vh;
-  padding: 3rem 1rem 5rem;
+  padding: 3rem 5rem 5rem;
   display: flex;
-  justify-content: center;
+  justify-content: left;
 }
 
 .app-inner {
   width: 100%;
-  max-width: 900px;
 }
 
 /* ===== HEADER ===== */
 .app-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 2.5rem;
   animation: header-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -546,6 +545,19 @@ body {
 
 @media (max-width: 640px) {
   .lists-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.task-list {
+   display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+@media (max-width: 640px) {
+  .task-list {
     grid-template-columns: 1fr;
   }
 }

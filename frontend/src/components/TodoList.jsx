@@ -29,7 +29,7 @@ function TodoList({
         <p className="empty-state">{emptyMessage}</p>
       ) : (
         <ul
-          style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}
+          class="task-list"
           aria-label={`${title} tasks`}
         >
           {todos.map((todo, index) => (
