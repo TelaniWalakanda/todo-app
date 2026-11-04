@@ -22,9 +22,9 @@ backend/
 └── server.js             express setup and app.listen
 ```
 
-There's no `package.json` in here on purpose. Everything is installed from the repo
-root — `npm install` there, then `npm run dev` from there too (it runs
-`nodemon backend/server.js`).
+There's no `package.json` in here on purpose. Everything — backend and frontend —
+is installed from the single `package.json` in the repo root: `npm install` there,
+then `npm run dev` to start the API (it runs `nodemon backend/server.js`).
 
 ## Setting up MongoDB
 
